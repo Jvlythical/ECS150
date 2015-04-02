@@ -1,2 +1,2 @@
-g++ -Wall shell.cpp
+gcc -Wall shell.c
 ./a.out
