@@ -1,0 +1,35 @@
+1. Interupt vector table
+
+2. User program generates software interupt
+
+	System call puts info into register then generates regiester
+
+	kernel then reads the register and does something 
+
+3. Why deal in interupts?
+	Protection, i.e. limit what user programs can access
+
+4.  User mod and kernel mode 
+
+5.  cin/cout => system call => asks kernal to do something
+
+6.  Hardware vs software interupt
+
+7.  Volatile and non-volatile memory
+		volatle => RAM
+		non-volatile => hard disk
+
+8.  DRAM(dynamic) vs SRAM (cache)
+		i.e. static vs dynamic RAM
+
+		DRAM needs to be refreshed constantly else it loses its charge
+		Reading it loses its charge, meaning it needs to be refreshed
+
+		SDRAM: synchronous DRAM
+
+9.  ROM: read only, non-volatile
+		PROM: programmable read only memory
+		EPROM: erasable programmable ... 
+
+10. Security: allow certain ppl to access
+		Protection:  mechanisms to prevent unauthorized people
