@@ -1,2 +1,4 @@
 a.out
 *.sw*
+*.o
+backup

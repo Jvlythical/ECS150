@@ -1,2 +1,3 @@
-gcc -Wall -g shell.c
-./a.out
+make clean
+make shell
+./shell

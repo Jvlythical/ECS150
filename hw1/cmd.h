@@ -1,6 +1,6 @@
-#ifndef CMD_H
-#define CMD_H
-	
+#ifndef _CMD_H
+#define _CMD_H
+
 	// LS
 	void run_ls() {
 	}
