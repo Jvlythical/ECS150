@@ -52,8 +52,10 @@
 			
 			if(tok != NULL) 
 				argv[argc++] = tok;
-			else 
+			else {
+				argv[argc] = (char *) NULL;
 				break;
+			}
 
 		} while(1);
 
@@ -61,6 +63,8 @@
 		
 		if(pid == 0) {
 			execvp(path, argv);
+			exit(0);
+		} else {
 			waitpid(pid, NULL, 0);
 		}
 
