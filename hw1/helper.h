@@ -33,10 +33,11 @@
 		char tmp[255], *tok;
 
 		memcpy(tmp, cmd, strlen(cmd));
+		tmp[strlen(tmp)] = '\0';
 		tok = strtok(tmp, " ");
 
 		// Route to command
-		if(strcmp(tok, "ls") == 0) 
+		if(strcmp(tok, "lssfd") == 0) 
 			run_ls();
 		else if(strcmp(tok, "pwd") == 0)
 			run_pwd();
@@ -69,5 +70,9 @@
 		write(STDIN_FILENO, DELETE_CHAR, strlen(DELETE_CHAR));
 		b_pos -= 1;
 	}
+
+
+
+
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef _CMD_H
 #define _CMD_H
 
+	#include "cmd_helper.h"
+
 	// LS
 	void run_ls() {
 	}
@@ -27,6 +29,7 @@
 		}
 	}
 
+	// CD
 	int run_cd(char *path) {
 		int status;
 
@@ -37,38 +40,55 @@
 
 		return status;
 	}
-
+	
+	// RUN FILE
 	int run_file(char *cmd) {
-		char *argv[16], *tok;
-		int argc = 0;
+		int argc = 0, len = 16, i = 0;
+		char *argv[16], *tok, *tokens[len];
 		
-		char *path = strtok(cmd, " ");
+		// Tokenize the input
+		splitInput(cmd, tokens, len);
 		
-		//if(path != NULL) 
-		//		argv[argc++] = path;
-				
-		do {
-			tok = strtok(NULL, " \n\t");
-			
-			if(tok != NULL) 
-				argv[argc++] = tok;
-			else {
-				argv[argc] = (char *) NULL;
+		while(1) {
+			cmd = tokens[i];
+
+			if(cmd == NULL)
 				break;
+
+			// Get args
+			tok = strtok(cmd, " ");
+			argv[argc++] = tok;
+			
+			do {
+				tok = strtok(NULL, " \n\t");
+				
+				if(tok != NULL) 
+					argv[argc++] = tok;
+				else {
+					argv[argc] = (char *) NULL;
+					break;
+				}
+			} while(1);
+
+			//argv = getCmdArgs(cmd);
+
+			// Create new process
+			int pid = fork();
+
+			switch(pid) {
+				case -1:
+					exit(1);
+				case 0:
+					execvp(argv[0], argv);
+					exit(0);
+				default:
+					waitpid(0, NULL, 0);
 			}
 
-		} while(1);
-
-		int pid = fork();
-		
-		if(pid == 0) {
-			execvp(path, argv);
-			exit(0);
-		} else {
-			waitpid(pid, NULL, 0);
+			++i;
 		}
 
-		return 0;
+		return 1;
 	}
 
 #endif

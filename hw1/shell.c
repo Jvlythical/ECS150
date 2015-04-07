@@ -5,8 +5,8 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "keycode.h"
 #include "noncanmode.h"
+#include "keycode.h"
 #include "cmd.h"
 #include "helper.h"
 
