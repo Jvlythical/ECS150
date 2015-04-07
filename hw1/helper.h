@@ -30,8 +30,10 @@
 
 // ROUTER
 	void route_to_cmd(char *cmd) {
-			
-		char *tok = strtok(cmd, " \t\n");
+		char tmp[255], *tok;
+
+		memcpy(tmp, cmd, strlen(cmd));
+		tok = strtok(tmp, " ");
 
 		// Route to command
 		if(strcmp(tok, "ls") == 0) 
@@ -44,9 +46,9 @@
 			tok = strtok(NULL, " \n\t");
 			run_cd(tok);
 		} else {
-			//run_file(tok);
+			run_file(cmd);
 		}
-		
+			
 		push_h(cmd);
 	}
 

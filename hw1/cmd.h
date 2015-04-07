@@ -38,26 +38,30 @@
 		return status;
 	}
 
-	int run_file(char *path) {
+	int run_file(char *cmd) {
 		char *argv[16], *tok;
 		int argc = 0;
 		
+		char *path = strtok(cmd, " ");
+		
+		//if(path != NULL) 
+		//		argv[argc++] = path;
+				
 		do {
 			tok = strtok(NULL, " \n\t");
 			
-			if(tok != NULL) {
+			if(tok != NULL) 
 				argv[argc++] = tok;
-			} else 
+			else 
 				break;
 
 		} while(1);
 
 		int pid = fork();
-
-		if(pid == 0)
-			execv(path, argv);
-		else {
-			waitpid(pid, 0, 0);
+		
+		if(pid == 0) {
+			execvp(path, argv);
+			waitpid(pid, NULL, 0);
 		}
 
 		return 0;
