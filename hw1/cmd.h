@@ -97,7 +97,7 @@
 					if(pipe_set == -1) {
 						pipeFromParent(fd);
 
-						write(0, "\0", 1);
+						//write(0, "\0", 1);
 						char tmp[255];
 						//int count = read(0, tmp, 255);
 						//write(1, tmp, count);

@@ -67,8 +67,10 @@
 	}
 
 	void handle_backspace(int *b_pos) {
+		char tmp;
+
 		write(STDIN_FILENO, DELETE_CHAR, strlen(DELETE_CHAR));
-		b_pos -= 1;
+		*b_pos -= 1;
 	}
 
 
