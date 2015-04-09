@@ -43,17 +43,22 @@
 	
 	// RUN FILE
 	int run_file(char *cmd) {
-		int argc = 0, len = 16, i = 0;
-		char *argv[16], *tok, *tokens[len];
+		int fd[2], pipe_set = 0;
+		int i = 0, len = 16;
+		char *tokens[len];
 		
 		// Tokenize the input
 		splitInput(cmd, tokens, len);
 		
 		while(1) {
-			cmd = tokens[i];
+			int argc = 0; 
+			char *argv[16], *tok;
+			
+			cmd = tokens[i++];
+			if(cmd == NULL) break;
+			if(strcmp(cmd, "|") == 0 ) continue;
 
-			if(cmd == NULL)
-				break;
+			
 
 			// Get args
 			tok = strtok(cmd, " ");
@@ -69,23 +74,47 @@
 					break;
 				}
 			} while(1);
-
-			//argv = getCmdArgs(cmd);
+			
+			if(pipe_set == 1)
+				pipe_set = -1;
+			if(tokens[i] != NULL) {
+				if(strcmp(tokens[i],"|") == 0) 
+					if( pipe(fd) == -1) {
+						exit(EXIT_FAILURE);
+					}
+					
+					pipe_set = 1;
+			}
+							
 
 			// Create new process
 			int pid = fork();
 
 			switch(pid) {
 				case -1:
-					exit(1);
+					return -1;
 				case 0:
+					printf("%d\n", pipe_set);
+					if(pipe_set == -1) {
+						pipeFromParent(fd);
+						//char tmp[20];
+						puts("here");
+						//read(0, tmp, 20);
+						//write(0, tmp, 20);
+						pipe_set = 0;
+					}
+
+					if(pipe_set == 1) {
+						pipeToChild(fd);
+					}
+
 					execvp(argv[0], argv);
 					exit(0);
 				default:
+					
 					waitpid(0, NULL, 0);
 			}
 
-			++i;
 		}
 
 		return 1;

@@ -51,4 +51,21 @@
 		return argv;
 	}
 
+	void pipeFromParent(int *fd) {
+		// Close the write end
+		close(fd[1]);
+
+		// Copy the read end into child's stdin
+		dup2(fd[0], STDIN_FILENO);
+
+		// Close the read end
+		close(fd[0]);
+	}
+
+	void pipeToChild(int *fd) {
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
+	}
+
 #endif
