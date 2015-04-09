@@ -58,8 +58,6 @@
 			if(cmd == NULL) break;
 			if(strcmp(cmd, "|") == 0 ) continue;
 
-			
-
 			// Get args
 			tok = strtok(cmd, " ");
 			argv[argc++] = tok;
@@ -94,21 +92,24 @@
 				case -1:
 					return -1;
 				case 0:
-					printf("%d\n", pipe_set);
+					//printf("%d\n", pipe_set);
+
 					if(pipe_set == -1) {
 						pipeFromParent(fd);
-						//char tmp[20];
-						puts("here");
-						//read(0, tmp, 20);
-						//write(0, tmp, 20);
+
+						write(0, "\0", 1);
+						char tmp[255];
+						//int count = read(0, tmp, 255);
+						//write(1, tmp, count);
 						pipe_set = 0;
 					}
 
-					if(pipe_set == 1) {
+					if(pipe_set == 1) 
 						pipeToChild(fd);
-					}
 
 					execvp(argv[0], argv);
+
+
 					exit(0);
 				default:
 					
