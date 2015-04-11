@@ -84,7 +84,8 @@
 					pipe_set = 1;
 			}
 
-			int status = checkRedirectOut(tokens, &i);
+			int status = checkRedirectIn(tokens, &i);
+			 status = checkRedirectOut(tokens, &i);
 							
 
 			// Create new process

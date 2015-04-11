@@ -100,4 +100,25 @@
 			}
 	}
 
+	int checkRedirectIn(char **tokens, int *pos) {
+		int next = *pos;
+		if(tokens[next] == NULL) 
+			return -1;
+
+			if(strcmp(tokens[next], "<") == 0) {
+				if(tokens[next + 1] != NULL) {
+					char buf[999];
+
+					int fd = open(strip(tokens[next + 1]), O_RDONLY);
+
+					if(dup2(fd, STDIN_FILENO)) {
+						*pos = *pos + 2;
+						return 1;
+					} else 
+						return 0;
+
+				}
+			}
+	}
+
 #endif
