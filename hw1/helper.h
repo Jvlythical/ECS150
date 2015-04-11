@@ -3,7 +3,8 @@
 	
 	int h_size = 255, h_count = 0;
 	char *h_stack[255];
-
+	char str[] = ".";
+	
 // HISTORY
 	int resize_h(char **s) {
 		return 1;
@@ -30,15 +31,21 @@
 
 // ROUTER
 	void route_to_cmd(char *cmd) {
-		char tmp[255], *tok;
+		//char tmp[255], *tok;
 
-		memcpy(tmp, cmd, strlen(cmd));
-		tmp[strlen(tmp)] = '\0';
-		tok = strtok(tmp, " ");
+		//memcpy(tmp, cmd, strlen(cmd));
+		//tmp[strlen(tmp)] = '\0';
+		//tok = strtok(tmp, " ");
 
+		char *tok = strtok(cmd, " \t\n");
+		
 		// Route to command
-		if(strcmp(tok, "lssfd") == 0) 
-			run_ls();
+		if(strcmp(tok, "ls") == 0) {
+			if ((tok = strtok(NULL, " \n\t")) != NULL)
+				run_ls(tok);
+			else
+				run_ls(str);
+		}
 		else if(strcmp(tok, "pwd") == 0)
 			run_pwd();
 		else if(strcmp(tok, "history") == 0)	
