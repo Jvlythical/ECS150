@@ -6,6 +6,10 @@
 #include <string.h>
 #include <fcntl.h>
 
+#include <dirent.h> //for ls
+#include <sys/stat.h> //for ls
+#include <sys/types.h> //for ls
+
 #include "noncanmode.h"
 #include "keycode.h"
 #include "cmd.h"
@@ -38,6 +42,20 @@ int main(int argc, char *argv[]) {
 			if(RXChar == BACKSPACE) {
 				handle_backspace(&b_pos);		
 				continue;
+			}
+			
+			// UP/DOWN ARROWS
+			if(RXChar == ESC) {
+				read(STDIN_FILENO, &RXChar, 1);
+				if(RXChar == LB) {
+					read(STDIN_FILENO, &RXChar, 1);
+					handle_arrows(RXChar);
+/*					if(RXChar == cA)
+						handle_up();
+					else if(RXChar == cB)
+						handle_down();
+*/
+				}
 			}
 			
 			// Else display keystroke

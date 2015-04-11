@@ -3,7 +3,8 @@
 	
 	int h_size = 255, h_count = 0;
 	char *h_stack[255];
-
+	char str[] = ".";
+	
 // HISTORY
 	int resize_h(char **s) {
 		return 1;
@@ -42,8 +43,12 @@
 		push_h(cmd);
 		
 		// Route to command
-		if(strcmp(tok, "lssfd") == 0) 
-			run_ls();
+		if(strcmp(tok, "ls") == 0) {
+			if ((tok = strtok(NULL, " \n\t")) != NULL)
+				run_ls(tok);
+			else
+				run_ls(str);
+		}
 		else if(strcmp(tok, "pwd") == 0)
 			run_pwd();
 		else if(strcmp(tok, "history") == 0)	
@@ -74,6 +79,34 @@
 		*b_pos -= 1;
 	}
 
+	void handle_arrows(char direction) {
+//		int count;
+
+		if (direction == cA) {	//up
+			if (h_count == 1) {
+				write(1, h_stack[0], strlen(h_stack[0]));
+				write(1, "\n", 1);
+			}
+			else {
+				write(1, h_stack[h_count-1], strlen(h_stack[h_count-1]));
+				write(1, "\n", 1);
+				h_count--;
+			}
+			
+			
+		}
+		else {
+			
+			if (strlen(h_stack[h_count]) == 0)
+				printf("clear command line\n");
+			else {
+				h_count++;
+				write(1, h_stack[h_count-1], strlen(h_stack[h_count-1]));
+						
+			}	
+		}
+
+	}
 
 
 
