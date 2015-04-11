@@ -4,6 +4,7 @@
 #include <termios.h>
 #include <ctype.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include "noncanmode.h"
 #include "keycode.h"

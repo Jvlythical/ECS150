@@ -26,6 +26,17 @@
 		
 	}
 
+	char * strip(char *str) {
+		int end = strlen(str) - 1;
+
+		if(str[0] == ' ' || str[0] == '\n' || str[0] == '\t')
+			str = str + 1;
+		if(str[end] == ' ' || str[end] == '\n' || str[end] == '\t')
+			str[end] = '\0';
+
+		return str;
+	}
+
 	inline char** getCmdArgs(char *cmd) {
 		char cpy[strlen(cmd) + 1];
 		memcpy(cpy, cmd, strlen(cmd) + 1);
@@ -66,6 +77,27 @@
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
+	}
+
+	int checkRedirectOut(char **tokens, int *pos) {
+		int next = *pos;
+		if(tokens[next] == NULL) 
+			return -1;
+
+			if(strcmp(tokens[next], ">") == 0) {
+				if(tokens[next + 1] != NULL) {
+					int fd = open(strip(tokens[next + 1]), O_CREAT | O_WRONLY, 0751);
+					
+					if(fd < 0)
+						return 0;
+
+					if(dup2(fd, STDOUT_FILENO)) {
+						*pos = *pos + 2;
+						return 1;
+					} else 
+						return 0;
+				}
+			}
 	}
 
 #endif
