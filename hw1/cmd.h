@@ -1,6 +1,8 @@
 #ifndef _CMD_H
 #define _CMD_H
 
+//asdf
+
 	#include "cmd_helper.h"
 
 	// LS
