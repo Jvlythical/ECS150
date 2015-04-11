@@ -13,6 +13,29 @@
 
 		return str;
 	}
+
+	void printStdin() {
+		char buf[999];
+
+		int len = read(STDIN_FILENO, buf, 999);
+		write(STDOUT_FILENO, buf, len);
+	}
+
+	int tryPiping(char *tok, int pipe_set, int *fd) {
+		if(pipe_set == 1)
+			pipe_set = -1;
+
+		if(tok != NULL) {
+			if(strcmp(tok,"|") == 0) 
+				if( pipe(fd)) 
+					exit(EXIT_FAILURE);
+				
+				pipe_set = 1;
+		}
+
+		return pipe_set;
+	}
+
 	void splitInput(char *input, char **buf, int buf_len) {
 		char cpy[strlen(input) + 1];
 		memcpy(cpy, input, strlen(input) + 1);
@@ -23,10 +46,10 @@
 		while(tok != NULL) {
 			buf[len++] = strip(tok);
 
-			tok = strtok(NULL, "<|>");
+			tok = strtok(NULL, "<|>&");
 			if(tok != NULL) 
 				for(i = start; i < strlen(cpy); ++i) {
-					if(cpy[i] == '<' || cpy[i] == '>' || cpy[i] == '|') {
+					if(cpy[i] == '<' || cpy[i] == '>' || cpy[i] == '|' || cpy[i] == '&') {
 						buf[len] = malloc(1);
 						buf[len++][0] = cpy[i];
 						start = i + 1;

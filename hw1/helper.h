@@ -43,7 +43,7 @@
 		push_h(cmd);
 		
 		// Route to command
-		if(strcmp(tok, "ls") == 0) {
+		if(strcmp(tok, "lsdfag") == 0) {
 			if ((tok = strtok(NULL, " \n\t")) != NULL)
 				run_ls(tok);
 			else

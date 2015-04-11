@@ -100,16 +100,15 @@ void run_ls(char *path_input) {
 	
 	// RUN FILE
 	int run_file(char *cmd) {
-		int fd[2], pipe_set = 0;
+		int fd[2], pipe_flag = 0;
 		int i = 0, len = 16;
-		int background_flag = 0, debug_flag = 1;
+		int background_flag = 0, debug_flag = 0;
 		char *tokens[len];
 		
-		// Tokenize the input
-		splitInput(cmd, tokens, len);
-
 		// Check if cmd should run in background
 		background_flag = isBackgroundCmd(cmd);
+		// Tokenize the input
+		splitInput(cmd, tokens, len);
 
 		while(1) {
 			int argc = 0; 
@@ -119,24 +118,13 @@ void run_ls(char *path_input) {
 			
 			// Parse command
 			if(cmd == NULL) break;
-			if(strcmp(cmd, "|") == 0 )
-				continue;
-
+			if(strcmp(cmd, "|") == 0 ) continue;
 			if(!strcmp(cmd, "<") || !strcmp(cmd, ">")) {
 				i += 2;
 				continue;
 			}
-			
-			if(pipe_set == 1)
-				pipe_set = -1;
-
-			if(tokens[i] != NULL) {
-				if(strcmp(tokens[i],"|") == 0) 
-					if( pipe(fd)) 
-						exit(EXIT_FAILURE);
-					
-					pipe_set = 1;
-			}
+		
+			pipe_flag = tryPiping(tokens[i], pipe_flag, fd);
 
 			// Get args
 			tok = strtok(cmd, " ");
@@ -164,7 +152,7 @@ void run_ls(char *path_input) {
 					if(debug_flag) {
 						printf("Child running: %s\n", argv[0]);
 						printf("%d %d\n", fd[0], fd[1]);
-						printf("Pipe status: %d\n", pipe_set);
+						printf("Pipe status: %d\n", pipe_flag);
 					}
 
 					// Check for redirecting
@@ -172,19 +160,13 @@ void run_ls(char *path_input) {
 			 		tryRedirectOut(tokens, &i);
 					
 					// Check for piping
-					if(pipe_set == -1) {
+					if(pipe_flag == -1) {
 						pipeFromParent(fd);
-						pipe_set = 0;
-						
-						//write(STDIN_FILENO, "\n", 1);
-						//char tmp[255];
-						//int len = read(STDIN_FILENO, tmp, 255);
-						//write(STDOUT_FILENO, tmp, len);
+						pipe_flag = 0;
 					}
 					
-					if(pipe_set == 1) 
+					if(pipe_flag == 1) 
 						pipeToChild(fd);
-					
 										
 					// Run command
 					execvp(argv[0], argv);
@@ -194,6 +176,7 @@ void run_ls(char *path_input) {
 						wait(NULL);
 					
 					if(debug_flag) {
+						printf("Background_flag: %d\n", background_flag );
 						printf("Parent waiting for PID: %d\n", pid);
 						printf("%d %d\n", fd[0], fd[1]);
 					}
