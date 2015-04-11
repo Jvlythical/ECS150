@@ -32,10 +32,15 @@
 	void route_to_cmd(char *cmd) {
 		char tmp[255], *tok;
 
+		if(strlen(cmd) == 0)
+			return;
+
 		memcpy(tmp, cmd, strlen(cmd));
 		tmp[strlen(tmp)] = '\0';
 		tok = strtok(tmp, " ");
 
+		push_h(cmd);
+		
 		// Route to command
 		if(strcmp(tok, "lssfd") == 0) 
 			run_ls();
@@ -50,26 +55,22 @@
 			run_file(cmd);
 		}
 			
-		push_h(cmd);
 	}
 
 	void handle_enter(char k, char *b, int *b_pos) {
 		// Terminate the string
 		b[*b_pos] = '\0';
-		write(STDIN_FILENO, NEXT_LINE, strlen(PROMPT));
+		write(STDOUT_FILENO, NEXT_LINE, strlen(PROMPT));
 
 		route_to_cmd(b);
-
-		write(STDIN_FILENO, PROMPT, strlen(PROMPT));
-
+		write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
+		
 		// Reset buffer
 		*b_pos = 0;
 	}
 
 	void handle_backspace(int *b_pos) {
-		char tmp;
-
-		write(STDIN_FILENO, DELETE_CHAR, strlen(DELETE_CHAR));
+		write(STDOUT_FILENO, DELETE_CHAR, strlen(DELETE_CHAR));
 		*b_pos -= 1;
 	}
 
