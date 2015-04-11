@@ -73,6 +73,34 @@
 		*b_pos -= 1;
 	}
 
+	void handle_arrows(char direction) {
+//		int count;
+
+		if (direction == cA) {	//up
+			if (h_count == 1) {
+				write(1, h_stack[0], strlen(h_stack[0]));
+				write(1, "\n", 1);
+			}
+			else {
+				write(1, h_stack[h_count-1], strlen(h_stack[h_count-1]));
+				write(1, "\n", 1);
+				h_count--;
+			}
+			
+			
+		}
+		else {
+			
+			if (strlen(h_stack[h_count]) == 0)
+				printf("clear command line\n");
+			else {
+				h_count++;
+				write(1, h_stack[h_count-1], strlen(h_stack[h_count-1]));
+						
+			}	
+		}
+
+	}
 
 
 

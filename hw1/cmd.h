@@ -1,12 +1,67 @@
 #ifndef _CMD_H
 #define _CMD_H
 
-//asdf
-
 	#include "cmd_helper.h"
 
 	// LS
-	void run_ls() {
+void run_ls(char *path_input) {
+		struct dirent *entry;
+		DIR *dp;
+		struct stat info;
+
+		static char local_buff[16] = {0};
+		int i;
+			
+		dp = opendir(path_input);
+				
+		while( (entry = readdir(dp)) ) {
+						
+			if ( stat(entry->d_name, &info) == 0) {
+//				pwrite(0, info.st_mode, 100, 0);
+//				fprintf(stdout, "%s", info.st_mode)
+//				write(0, info.st_mode,  20);				
+//				printf("%lo", info.st_mode);
+				i = 0;	
+				if ( S_ISDIR(info.st_mode) ) local_buff[i] = 'd';
+				else local_buff[i] = '-';
+				i++;
+				if ((info.st_mode & S_IRUSR) == S_IRUSR) local_buff[i] = 'r';
+				else local_buff[i] = '-';
+				i++;
+				if ((info.st_mode & S_IWUSR) == S_IWUSR) local_buff[i] = 'w';
+				else local_buff[i] = '-';
+				i++;
+				if ((info.st_mode & S_IXUSR) == S_IXUSR) local_buff[i] = 'x';
+				else local_buff[i] = '-';
+				i++;
+				// group permissions
+				if ((info.st_mode & S_IRGRP) == S_IRGRP) local_buff[i] = 'r';
+				else local_buff[i] = '-';
+				i++;
+				if ((info.st_mode & S_IWGRP) == S_IWGRP) local_buff[i] = 'w';
+				else local_buff[i] = '-';
+				i++;
+				if ((info.st_mode & S_IXGRP) == S_IXGRP) local_buff[i] = 'x';
+				else local_buff[i] = '-';
+				i++;
+				// other permissions
+				if ((info.st_mode & S_IROTH) == S_IROTH) local_buff[i] = 'r';
+				else local_buff[i] = '-';
+				i++;
+				if ((info.st_mode & S_IWOTH) == S_IWOTH) local_buff[i] = 'w';
+				else local_buff[i] = '-';
+				i++;
+				if ((info.st_mode & S_IXOTH) == S_IXOTH) local_buff[i] = 'x';
+				else local_buff[i] = '-';
+
+				write(0, local_buff, 9);
+				write(0, " ", 1);
+			}
+			puts(entry->d_name);
+//			write(0, entry->d_name, 255);
+		}
+		closedir(dp);
+		
 	}
 
 	// PWD
