@@ -125,6 +125,7 @@ void run_ls(char *path_input) {
 			}
 		
 			pipe_flag = tryPiping(tokens[i], pipe_flag, fd);
+			//printf("%d\n", pipe_flag);
 
 			// Get args
 			tok = strtok(cmd, " ");
@@ -180,9 +181,11 @@ void run_ls(char *path_input) {
 			}
 
 		}
-
-		close(fd[0]);
-		close(fd[1]);
+		
+		if(pipe_flag) {
+			close(fd[0]);
+			close(fd[1]);
+		}
 
 		if(!background_flag)
 			wait(NULL);
