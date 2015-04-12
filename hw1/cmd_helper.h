@@ -35,6 +35,33 @@
 
 		return pipe_set;
 	}
+	
+	int tryPiping2(char **tokens, int *pos, int* fd, int pipe_set) {
+		int next = *pos;
+		if(pipe_set == 1)
+			pipe_set = -1;
+
+
+		// If no argument, return
+		while(tokens[next] != NULL) {
+			
+			if(strcmp(tokens[next], "|") == 0) {
+				pipe_set = tryPiping(tokens[next], pipe_set, fd);
+				while(tokens[next + 1] != NULL) {
+					tokens[next] = tokens[next + 1];
+					next += 1;
+				}
+
+				tokens[next] = NULL;
+
+				return pipe_set;
+			}
+
+			next += 1;
+		}
+		
+		return pipe_set;
+	}
 
 	void splitInput(char *input, char **buf, int buf_len) {
 		char cpy[strlen(input) + 1];

@@ -120,11 +120,13 @@ void run_ls(char *path_input) {
 			if(cmd == NULL) break;
 			if(strcmp(cmd, "|") == 0 ) continue;
 			if(!strcmp(cmd, "<") || !strcmp(cmd, ">")) {
-				i += 2;
+				if(pipe_flag == 0)
+					i += 2;
 				continue;
 			}
 		
-			pipe_flag = tryPiping(tokens[i], pipe_flag, fd);
+		//	pipe_flag = tryPiping(tokens[i], pipe_flag, fd);
+			pipe_flag = tryPiping2(tokens, &i, fd, pipe_flag);
 			//printf("%d\n", pipe_flag);
 
 			// Get args
@@ -160,8 +162,10 @@ void run_ls(char *path_input) {
 					tryRedirectIn(tokens, &i);
 			 		tryRedirectOut(tokens, &i);
 					
+					//printf("%d\n", pipe_flag);
 					// Check for piping
 					if(pipe_flag == -1) {
+						//printStdin();
 						pipeFromParent(fd);
 						pipe_flag = 0;
 					}
