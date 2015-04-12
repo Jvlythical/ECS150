@@ -171,10 +171,7 @@ void run_ls(char *path_input) {
 					// Run command
 					execvp(argv[0], argv);
 					exit(0);
-				default:
-					if(!background_flag)
-						wait(NULL);
-					
+										
 					if(debug_flag) {
 						printf("Background_flag: %d\n", background_flag );
 						printf("Parent waiting for PID: %d\n", pid);
@@ -183,6 +180,13 @@ void run_ls(char *path_input) {
 			}
 
 		}
+
+		close(fd[0]);
+		close(fd[1]);
+
+		if(!background_flag)
+			wait(NULL);
+
 
 		return 1;
 	}
