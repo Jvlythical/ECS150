@@ -18,11 +18,10 @@ void run_ls(char *path_input) {
 				
 		while( (entry = readdir(dp)) ) {
 						
-			if ( stat(entry->d_name, &info) == 0) {
-//				pwrite(0, info.st_mode, 100, 0);
-//				fprintf(stdout, "%s", info.st_mode)
-//				write(0, info.st_mode,  20);				
-//				printf("%lo", info.st_mode);
+		//	if ( stat(entry->d_name, &info) == 0) {
+				
+				stat(entry->d_name, &info);				
+
 				i = 0;	
 				if ( S_ISDIR(info.st_mode) ) local_buff[i] = 'd';
 				else local_buff[i] = '-';
