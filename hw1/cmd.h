@@ -9,7 +9,7 @@ void run_ls(char *path_input) {
 		DIR *dp;
 		struct stat info;
 
-		static char local_buff[16] = {0};
+		static char buffer[10] = {0};
 		int i;
 			
 		dp = opendir(path_input);
@@ -17,48 +17,43 @@ void run_ls(char *path_input) {
 		while( (entry = readdir(dp)) ) {
 						
 			if ( stat(entry->d_name, &info) == 0) {
-//				pwrite(0, info.st_mode, 100, 0);
-//				fprintf(stdout, "%s", info.st_mode)
-//				write(0, info.st_mode,  20);				
-//				printf("%lo", info.st_mode);
 				i = 0;	
-				if ( S_ISDIR(info.st_mode) ) local_buff[i] = 'd';
-				else local_buff[i] = '-';
+				if ( S_ISDIR(info.st_mode) ) buffer[i] = 'd';
+				else buffer[i] = '-';
 				i++;
-				if ((info.st_mode & S_IRUSR) == S_IRUSR) local_buff[i] = 'r';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IRUSR) == S_IRUSR) buffer[i] = 'r';
+				else buffer[i] = '-';
 				i++;
-				if ((info.st_mode & S_IWUSR) == S_IWUSR) local_buff[i] = 'w';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IWUSR) == S_IWUSR) buffer[i] = 'w';
+				else buffer[i] = '-';
 				i++;
-				if ((info.st_mode & S_IXUSR) == S_IXUSR) local_buff[i] = 'x';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IXUSR) == S_IXUSR) buffer[i] = 'x';
+				else buffer[i] = '-';
 				i++;
 				// group permissions
-				if ((info.st_mode & S_IRGRP) == S_IRGRP) local_buff[i] = 'r';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IRGRP) == S_IRGRP) buffer[i] = 'r';
+				else buffer[i] = '-';
 				i++;
-				if ((info.st_mode & S_IWGRP) == S_IWGRP) local_buff[i] = 'w';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IWGRP) == S_IWGRP) buffer[i] = 'w';
+				else buffer[i] = '-';
 				i++;
-				if ((info.st_mode & S_IXGRP) == S_IXGRP) local_buff[i] = 'x';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IXGRP) == S_IXGRP) buffer[i] = 'x';
+				else buffer[i] = '-';
 				i++;
 				// other permissions
-				if ((info.st_mode & S_IROTH) == S_IROTH) local_buff[i] = 'r';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IROTH) == S_IROTH) buffer[i] = 'r';
+				else buffer[i] = '-';
 				i++;
-				if ((info.st_mode & S_IWOTH) == S_IWOTH) local_buff[i] = 'w';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IWOTH) == S_IWOTH) buffer[i] = 'w';
+				else buffer[i] = '-';
 				i++;
-				if ((info.st_mode & S_IXOTH) == S_IXOTH) local_buff[i] = 'x';
-				else local_buff[i] = '-';
+				if ((info.st_mode & S_IXOTH) == S_IXOTH) buffer[i] = 'x';
+				else buffer[i] = '-';
 
-				write(0, local_buff, 9);
+				write(0, buffer, 10);
 				write(0, " ", 1);
 			}
 			puts(entry->d_name);
-//			write(0, entry->d_name, 255);
 		}
 		closedir(dp);
 		
@@ -79,7 +74,7 @@ void run_ls(char *path_input) {
 	// HISTORY
 	void run_history(char **s, int size) {
 		int i = 0;
-		
+
 		for(; i < size; ++i) {
 			write(0, s[i], strlen(s[i]));
 			write(0, "\n", 1);
@@ -100,34 +95,20 @@ void run_ls(char *path_input) {
 	
 	// RUN FILE
 	int run_file(char *cmd) {
-		int fd[2], pipe_flag = 0;
+		int fd[2], pipe_set = 0;
 		int i = 0, len = 16;
-		int background_flag = 0, debug_flag = 0;
 		char *tokens[len];
 		
-		// Check if cmd should run in background
-		background_flag = isBackgroundCmd(cmd);
 		// Tokenize the input
 		splitInput(cmd, tokens, len);
-
+		
 		while(1) {
 			int argc = 0; 
 			char *argv[16], *tok;
 			
 			cmd = tokens[i++];
-			
-			// Parse command
 			if(cmd == NULL) break;
 			if(strcmp(cmd, "|") == 0 ) continue;
-			if(!strcmp(cmd, "<") || !strcmp(cmd, ">")) {
-				if(pipe_flag == 0)
-					i += 2;
-				continue;
-			}
-		
-		//	pipe_flag = tryPiping(tokens[i], pipe_flag, fd);
-			pipe_flag = tryPiping2(tokens, &i, fd, pipe_flag);
-			//printf("%d\n", pipe_flag);
 
 			// Get args
 			tok = strtok(cmd, " ");
@@ -144,56 +125,52 @@ void run_ls(char *path_input) {
 				}
 			} while(1);
 			
+			if(pipe_set == 1)
+				pipe_set = -1;
+			if(tokens[i] != NULL) {
+				if(strcmp(tokens[i],"|") == 0) 
+					if( pipe(fd) == -1) {
+						exit(EXIT_FAILURE);
+					}
+					
+					pipe_set = 1;
+			}
+
+			int status = checkRedirectOut(tokens, &i);
+							
+
 			// Create new process
 			int pid = fork();
 
 			switch(pid) {
 				case -1:
-					exit(1);
+					return -1;
 				case 0:
+					//printf("%d\n", pipe_set);
 
-					if(debug_flag) {
-						printf("Child running: %s\n", argv[0]);
-						printf("%d %d\n", fd[0], fd[1]);
-						printf("Pipe status: %d\n", pipe_flag);
-					}
-
-					// Check for redirecting
-					tryRedirectIn(tokens, &i);
-			 		tryRedirectOut(tokens, &i);
-					
-					//printf("%d\n", pipe_flag);
-					// Check for piping
-					if(pipe_flag == -1) {
-						//printStdin();
+					if(pipe_set == -1) {
 						pipeFromParent(fd);
-						pipe_flag = 0;
+
+						//write(0, "\0", 1);
+						char tmp[255];
+						//int count = read(0, tmp, 255);
+						//write(1, tmp, count);
+						pipe_set = 0;
 					}
-					
-					if(pipe_flag == 1) 
+
+					if(pipe_set == 1) 
 						pipeToChild(fd);
-										
-					// Run command
+
 					execvp(argv[0], argv);
+
+
 					exit(0);
-										
-					if(debug_flag) {
-						printf("Background_flag: %d\n", background_flag );
-						printf("Parent waiting for PID: %d\n", pid);
-						printf("%d %d\n", fd[0], fd[1]);
-					}
+				default:
+					
+					waitpid(0, NULL, 0);
 			}
 
 		}
-		
-		if(pipe_flag) {
-			close(fd[0]);
-			close(fd[1]);
-		}
-
-		if(!background_flag)
-			wait(NULL);
-
 
 		return 1;
 	}
