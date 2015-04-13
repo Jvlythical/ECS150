@@ -50,7 +50,8 @@ int main(int argc, char *argv[]) {
 				read(STDIN_FILENO, &RXChar, 1);
 				if(RXChar == LB) {
 					read(STDIN_FILENO, &RXChar, 1);
-					handle_arrows(RXChar, &b_pos, b);
+					handle_arrows(RXChar, &b_pos, b, &x);
+					x++;
 				}
 				continue;
 			}

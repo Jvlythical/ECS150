@@ -82,17 +82,24 @@
 		*b_pos -= 1;
 	}
 
-	void handle_arrows(char direction, int *b_pos, char *b) {
+	void handle_arrows(char direction, int *b_pos, char *b, int *counter) {
 
 		int length = 0;
 
-		length = strlen(b);
-/*
-		while (length > 0) {
-			write(1, DELETE_CHAR, strlen(DELETE_CHAR));
-			length--;
+		//length = strlen(h_stack[h_count-1]);
+		//length = strlen(b);
+		
+		if (*counter != 0) {
+			length = strlen(h_stack[h_count]);
+			while (length > 0) {
+				write(1, DELETE_CHAR, strlen(DELETE_CHAR));
+				length--;
+			}
+			*counter += 1;
 		}
-*/
+
+//			length = strlen(h_stack[h_count-1]);
+
 		if (direction == cA) {	//up
 			if (h_count == 1) {
 				write(1, h_stack[0], strlen(h_stack[0]));
@@ -102,6 +109,7 @@
 			}
 
 			else {
+				
 				h_count--;	
 				write(1, h_stack[h_count], strlen(h_stack[h_count]));
 			}
@@ -123,6 +131,7 @@
 
 		}
 
+		*counter += 1;
 
 	}
 
