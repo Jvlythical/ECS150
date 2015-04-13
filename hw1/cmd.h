@@ -13,12 +13,15 @@ void run_ls(char *path_input) {
 		int i;
 			
 		dp = opendir(path_input);
-				
+		entry = readdir(dp);
+
 		while( (entry = readdir(dp)) ) {
-						
-			if ( stat(entry->d_name, &info) == 0) {
+//			if ( stat(entry->d_name, &info) == 0) {
+			stat(entry->d_name, &info);
+
 				i = 0;	
 				if ( S_ISDIR(info.st_mode) ) buffer[i] = 'd';
+//				if ((info.st_mode & S_ISDIR) == S_ISDIR) buffer[i] = 'd';
 				else buffer[i] = '-';
 				i++;
 				if ((info.st_mode & S_IRUSR) == S_IRUSR) buffer[i] = 'r';
@@ -52,7 +55,7 @@ void run_ls(char *path_input) {
 
 				write(0, buffer, 10);
 				write(0, " ", 1);
-			}
+	//		}
 			puts(entry->d_name);
 		}
 		closedir(dp);
