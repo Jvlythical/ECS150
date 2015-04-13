@@ -60,7 +60,6 @@ void run_ls(char *path_input) {
 			}
 			puts(entry->d_name);
 //			write(0, entry->d_name, 255);
-		}
 		closedir(dp);
 		
 	}

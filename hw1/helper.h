@@ -6,6 +6,9 @@
 	char str[] = ".";
 	int *num[10];
 	
+	void setPrompt() {
+	run_pwd(0);
+}
 // HISTORY
 	int resize_h(char **s) {
 		return 1;
@@ -47,7 +50,7 @@
 			}
 		}
 		else if(strcmp(tok, "pwd") == 0) {
-			run_pwd();
+			run_pwd(1);
 		}
 		else if(strcmp(tok, "history") == 0) {
 			run_history(h_stack, h_count);
