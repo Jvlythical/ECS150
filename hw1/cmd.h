@@ -254,7 +254,7 @@ void run_ls(char *path_input) {
 							pipe_flag = 0;
 						}
 						
-						printStdin();	
+						//printStdin();	
 					}
 					
 					if(pipe_flag == 1) {
