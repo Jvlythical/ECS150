@@ -22,7 +22,10 @@ int main(int argc, char *argv[]) {
     
     SetNonCanonicalMode(STDIN_FILENO, &SavedTermAttributes);
 
-    write(STDIN_FILENO, PROMPT, strlen(PROMPT));
+		setPrompt();
+
+    //write(STDIN_FILENO, PROMPT, strlen(PROMPT));
+
 
     do {
 			// Get keystroke

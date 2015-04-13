@@ -4,7 +4,11 @@
 	int h_size = 255, h_count = 0;
 	char *h_stack[255];
 	char str[] = ".";
-	
+
+void setPrompt() {
+	run_pwd(0);
+}
+
 // HISTORY
 	int resize_h(char **s) {
 		return 1;
@@ -50,13 +54,16 @@
 				run_ls(str);
 		}
 		else if(strcmp(tok, "pwd") == 0)
-			run_pwd();
+			run_pwd(1);
 		else if(strcmp(tok, "history") == 0)	
 			run_history(h_stack, h_count);
 		else if (strcmp(tok, "cd") == 0) {
 			tok = strtok(NULL, " \n\t");
 			run_cd(tok);
-		} else {
+		}
+		else if (strcmp(tok, "exit") == 0) 
+			exit(0);
+		else {
 			run_file(cmd);
 		}
 			
@@ -65,16 +72,22 @@
 	void handle_enter(char k, char *b, int *b_pos) {
 		// Terminate the string
 		b[*b_pos] = '\0';
-		write(STDOUT_FILENO, NEXT_LINE, strlen(PROMPT));
+		write(STDOUT_FILENO, NEXT_LINE, strlen(NEXT_LINE));
 
 		route_to_cmd(b);
-		write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
+		//write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
+		setPrompt();
 		
 		// Reset buffer
 		*b_pos = 0;
 	}
 
 	void handle_backspace(int *b_pos) {
+		if(*b_pos == 0) {
+			write(STDOUT_FILENO, "\a", 1);
+			return;
+		}
+
 		write(STDOUT_FILENO, DELETE_CHAR, strlen(DELETE_CHAR));
 		*b_pos -= 1;
 	}

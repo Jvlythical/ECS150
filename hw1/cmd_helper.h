@@ -18,27 +18,31 @@
 		char buf[999];
 
 		int len = read(STDIN_FILENO, buf, 999);
-		write(STDOUT_FILENO, buf, len);
+		lseek(STDIN_FILENO, 0, SEEK_SET);
+		//write(STDOUT_FILENO, buf, len);
+		fprintf(stderr, "\n\nPRINTING STDIN: \n");
+		fprintf(stderr, buf);
 	}
 
-	int tryPiping(char *tok, int pipe_set, int *fd) {
-		if(pipe_set == 1)
+	int tryPiping(char *tok, int pipe_set, int *fd, int *num) {
+		if(pipe_set == 1 || *num > -1)
 			pipe_set = -1;
 
 		if(tok != NULL) {
 			if(strcmp(tok,"|") == 0) 
-				if( pipe(fd)) 
-					exit(EXIT_FAILURE);
+				//if( pipe(fd)) 
+				//	exit(EXIT_FAILURE);
 				
+				*num = *num + 1;
 				pipe_set = 1;
 		}
 
 		return pipe_set;
 	}
 	
-	int tryPiping2(char **tokens, int *pos, int* fd, int pipe_set) {
+	int tryPiping2(char **tokens, int *pos, int* fd, int pipe_set, int *num) {
 		int next = *pos;
-		if(pipe_set == 1)
+		if(pipe_set == 1 || *num > -1)
 			pipe_set = -1;
 
 
@@ -46,7 +50,8 @@
 		while(tokens[next] != NULL) {
 			
 			if(strcmp(tokens[next], "|") == 0) {
-				pipe_set = tryPiping(tokens[next], pipe_set, fd);
+				pipe_set = tryPiping(tokens[next], pipe_set, fd, num);
+				
 				while(tokens[next + 1] != NULL) {
 					tokens[next] = tokens[next + 1];
 					next += 1;
@@ -127,6 +132,7 @@
 	}
 
 	void pipeToChild(int *fd) {
+		
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
@@ -187,6 +193,49 @@
 			}
 
 		return 0;
+	}
+
+	int getNumPipes(char **tokens, int **ar) {
+		int i = 0;
+		int count = 0;
+		while(tokens[i] != NULL) {
+			if(strcmp(tokens[i++], "|") == 0)
+				count++;
+		}
+
+		ar = (int**) malloc(sizeof(int *) * count);
+
+		for(i = 0; i < count; ++i) 
+			ar[i] = (int*) malloc(sizeof(int) * 2);
+
+		return count;
+	}
+
+	void closePipes(int **pipes, int count) {
+		int i = 0;
+		for(; i < count; ++i) {
+			close(pipes[i][0]);
+			close(pipes[i][1]);
+		}
+			
+	}
+
+	void marker() {
+		return;
+	}
+
+	int getNumRedirects(char **tokens) {
+		int i = 0;
+		int count = 0;
+
+		while(tokens[i] != NULL) {
+			if(strcmp(tokens[i], "<") == 0 || strcmp(tokens[i], ">") == 0)
+				count++;
+			
+			i++;
+		}
+
+		return count;
 	}
 
 #endif
