@@ -37,15 +37,15 @@ ifdef DEBUG_MODE
 CFLAGS += -g -ggdb
 APPCFLAGS += -g -ggdb
 else
-CFLAGS += -O3 -g
-APPCFLAGS += -O3 -g 
+CFLAGS += -O3
+APPCFLAGS += -O3
 endif
 
 ifeq ($(UNAME), Darwin)
 LDFLAGS = $(DEFINES) $(INCLUDES) $(LIBRARIES) 
 APPLDFLAGS += $(DEFINES) $(INCLUDES) -shared -rdynamic -flat_namespace -undefined suppress
 else
-LDFLAGS = $(DEFINES) $(INCLUDES) $(LIBRARIES) -Wl,-E -g
+LDFLAGS = $(DEFINES) $(INCLUDES) $(LIBRARIES) -Wl,-E
 APPLDFLAGS += $(DEFINES) $(INCLUDES) -shared -rdynamic -Wl,-E
 endif
 
